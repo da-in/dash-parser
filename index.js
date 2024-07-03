@@ -13,26 +13,33 @@ const parseMPD = async (mpdUrl) => {
     const mpd = await parser.parseStringPromise(mpdData);
 
     // Extract Periods
-    const periods = mpd.MPD.Period;
+    const periods = mpd.MPD.Period || [];
     periods.forEach((period, periodIndex) => {
       console.log(`Period ${periodIndex + 1}`);
 
       // Extract Adaptation Sets
-      const adaptationSets = period.AdaptationSet;
+      const adaptationSets = period.AdaptationSet || [];
       adaptationSets.forEach((adaptationSet, adaptationSetIndex) => {
+        const mimeType = adaptationSet.$.mimeType || 'undefined';
+        const codecs = adaptationSet.$.codecs || 'undefined';
         console.log(`  Adaptation Set ${adaptationSetIndex + 1}`);
-        console.log(`    mimeType: ${adaptationSet.$.mimeType}`);
-        console.log(`    codecs: ${adaptationSet.$.codecs}`);
+        console.log(`    mimeType: ${mimeType}`);
+        console.log(`    codecs: ${codecs}`);
 
         // Extract Representations
-        const representations = adaptationSet.Representation;
+        const representations = adaptationSet.Representation || [];
         representations.forEach((representation, representationIndex) => {
+          const id = representation.$.id || 'undefined';
+          const bandwidth = representation.$.bandwidth || 'undefined';
+          const width = representation.$.width || 'undefined';
+          const height = representation.$.height || 'undefined';
+          const baseURL = representation.BaseURL ? representation.BaseURL[0] : 'undefined';
           console.log(`      Representation ${representationIndex + 1}`);
-          console.log(`        id: ${representation.$.id}`);
-          console.log(`        bandwidth: ${representation.$.bandwidth}`);
-          console.log(`        width: ${representation.$.width}`);
-          console.log(`        height: ${representation.$.height}`);
-          console.log(`        BaseURL: ${representation.BaseURL[0]}`);
+          console.log(`        id: ${id}`);
+          console.log(`        bandwidth: ${bandwidth}`);
+          console.log(`        width: ${width}`);
+          console.log(`        height: ${height}`);
+          console.log(`        BaseURL: ${baseURL}`);
         });
       });
     });
@@ -40,6 +47,7 @@ const parseMPD = async (mpdUrl) => {
     console.error('Error parsing MPD:', error);
   }
 };
+
 
 // Example usage:
 const mpdUrl = 'https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd'
